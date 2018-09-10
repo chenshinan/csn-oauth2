@@ -32,8 +32,6 @@ public class Oauth2Configuration {
     protected static class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
         /**
          * 资源安全配置
-         * @param resources
-         * @throws Exception
          */
         @Override
         public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
@@ -47,21 +45,19 @@ public class Oauth2Configuration {
              * TokenExtractor：它的作用在于分离出请求中包含的token
              */
             System.out.println("——————————————————————ResourceServerSecurityConfigurer");
-//            super.configure(resources);
             resources.resourceId("order").stateless(true);
         }
 
         /**
          * http安全配置
-         * @param http
-         * @throws Exception
          */
         @Override
         public void configure(HttpSecurity http) throws Exception {
             System.out.println("——————————————————————HttpSecurity");
-            http
-                .authorizeRequests()
-                    .antMatchers("/order/**").authenticated();//配置order访问控制，必须认证过后才可以访问
+            /**
+             * 配置order访问控制，必须认证过后才可以访问
+             */
+            http.authorizeRequests().antMatchers("/order/**").authenticated();
         }
     }
 
@@ -85,7 +81,9 @@ public class Oauth2Configuration {
         @Override
         public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
             System.out.println("——————————————————————AuthorizationServerSecurityConfigurer");
-            //过滤掉表单认证
+            /**
+             * 主要是让/oauth/token支持client_id以及client_secret作登录认证
+             */
             security.allowFormAuthenticationForClients();
         }
 
@@ -114,23 +112,6 @@ public class Oauth2Configuration {
 
         @Override
         public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-            /**
-             * 配置AuthorizationServerEndpointsConfigurer众多相关类，包括配置身份认证器，配置认证方式，TokenStore，TokenGranter，OAuth2RequestFactory
-             *
-             * 顶级身份管理者AuthenticationManager：用来从请求中获取client_id,client_secret，
-             * 组装成一个UsernamePasswordAuthenticationToken作为身份标识，使用容器中的顶级身份管理器AuthenticationManager去进行身份认证
-             *
-             * 经过ClientCredentialsTokenEndpointFilter之后，身份信息已经得到了AuthenticationManager的验证。接着便到达了
-             * TokenEndpoint
-             *
-             * TokenEndpoint:一些校验代码之后，真正的/oauth/token端点暴露在了我们眼前，其中方法参数中的Principal经过之前的过滤器，
-             * 已经被填充了相关的信息，而方法的内部则是依赖了一个TokenGranter 来颁发token
-             *
-             * TokenGranter:根据五种模式来颁发token，AbstractTokenGranter实现类内部调用了AuthorizationServerTokenServices
-             *
-             * AuthorizationServerTokenServices：作用：提供了创建token，刷新token，获取token的实现。在创建token时，
-             * 他会调用tokenStore对产生的token和相关信息存储到对应的实现类中，可以是redis，数据库，内存，jwt
-             */
             System.out.println("——————————————————————AuthorizationServerEndpointsConfigurer");
             endpoints
                     .tokenStore(new RedisTokenStore(redisConnectionFactory))
