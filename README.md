@@ -1,4 +1,6 @@
-## oauth2
+# Spring Securty Oauth2
+
+> 2018.9.8-9.11
 
 * 通过注入接口的方式，可以通过注入List，可以直接注入所有实现类（适用于适配器模式）
 
@@ -10,7 +12,7 @@ private void setIusb(List<Iusb> lists){
 };
 ```
 
-### @EnableResourceServer：启用资源服务配置，注入配置：ResourceServerConfiguration
+## @EnableResourceServer：启用资源服务配置，注入配置：ResourceServerConfiguration
 
 ResourceServerConfiguration：资源服务配置，通过适配器的方式添加额外配置（资源安全配置 和 http安全配置），`这些配置会在注入的配置类ResourceServerConfiguration中全部遍历加载进去`
 
@@ -25,7 +27,7 @@ public void configure(HttpSecurity http) throws Exception {
 }
 ```
 
-#### ResourceServerSecurityConfigurer（资源安全配置类）：
+### ResourceServerSecurityConfigurer（资源安全配置类）：
 
 有许多属性配置（ResourceServerTokenServices），配置核心过滤器OAuth2AuthenticationProcessingFilter，携带access_token进行访问会进入过滤器
 
@@ -43,11 +45,11 @@ OAuth2AuthenticationManager.authenticate方法，调用了ResourceServerSecurity
 
 * 将身份信息绑定到SecurityContextHolder中（context上下文中）
 
-#### HttpSecurity（http安全配置）：
+### HttpSecurity（http安全配置）：
 
 配置有哪些路径的请求需要认证
 
-### @EnableAuthorizationServer：启用认证服务配置，注入配置：AuthorizationServerSecurityConfiguration
+## @EnableAuthorizationServer：启用认证服务配置，注入配置：AuthorizationServerSecurityConfiguration
 
 AuthorizationServerConfiguration：认证服务配置，通过适配器的方式添加额外配置（），`这些配置会在注入的配置类AuthorizationServerSecurityConfiguration中加载进去`
 
@@ -82,7 +84,7 @@ public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws E
 }
 ```
 
-#### AuthorizationServerSecurityConfigurer（认证安全配置类）：
+### AuthorizationServerSecurityConfigurer（认证安全配置类）：
 
 配置AuthorizationServer安全认证的相关信息，创建ClientCredentialsTokenEndpointFilter核心过滤器，访问/oauth/token之前会进入过滤器
 
@@ -96,15 +98,15 @@ ProviderManager.authenticate()方法，执行了类内部的一系列的Authenti
 
 * 认证提供类AuthenticationProvider中的`UserDetailsService`接口，用来加载用户信息，提供了几种实现类：InMemoryUserDetailManager`（存储在内存中）`、JdbcUserDetailManager`（存储在数据库）`等
 
-#### ClientDetailsServiceConfigurer（客户端相关信息配置类）：
+### ClientDetailsServiceConfigurer（客户端相关信息配置类）：
 
 配置OAuth2的客户端相关信息
 
-#### AuthorizationServerEndpointsConfigurer（端点信息配置类）：
+### AuthorizationServerEndpointsConfigurer（端点信息配置类）：
 
 配置AuthorizationServerEndpointsConfigurer端点配置相关类，包括配置身份认证器，配置认证方式，TokenStore，TokenGranter，OAuth2RequestFactory
 
-### Token处理端点TokenEndpoint
+## Token处理端点TokenEndpoint
 
 经过过滤器的前置校验和身份封装之后，进入/oauth/token端口
 
